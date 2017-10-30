@@ -22,7 +22,7 @@ namespace WMIWork2
         private void frmWMITools_Load(object sender, EventArgs e)
         {
             cmbNamespaceValue.Items.Clear();
-                        
+
             List<string> _namespace = WMItask.GetNamespacesToList("root");
 
             foreach (var item in _namespace)
@@ -36,7 +36,12 @@ namespace WMIWork2
         {
             cmbClassList.Items.Clear();
             cmbClassList.Text = "";
-            List<string> _classList = WMItask.GetClassesToList(cmbNamespaceValue.Text);
+            //List<string> _classList = WMItask.GetClassesToList(cmbNamespaceValue.Text);
+            string str = cmbNamespaceValue.Text;
+            Task<List<string>> task = Task<List<string>>.Factory.StartNew(() => WMItask.GetClassesToList(str));
+            List<string> _classList = task.Result;
+            task.Dispose();
+
             foreach (var item in _classList)
             {
                 cmbClassList.Items.Add(item);
@@ -52,12 +57,14 @@ namespace WMIWork2
             List<object> obj = new List<object>();
             obj.Add(cmbNamespaceValue.Text);
             obj.Add(cmbClassList.Text);
-            object a;
 
+            //List<string> _propertyList = WMItask.GetPropertiesToList(cmbNamespaceValue.Text, cmbClassList.Text);
+            string _namespace = cmbNamespaceValue.Text;
+            string _class = cmbClassList.Text;
 
-            //Task<List<string>> task = Task<List<string>>.Factory.StartNew(WMIToolsA.GetWMIPropertiesToList, a);
-
-            List<string> _propertyList = WMItask.GetPropertiesToList(cmbNamespaceValue.Text, cmbClassList.Text);
+            Task<List<string>> task = Task<List<string>>.Factory.StartNew(() => WMItask.GetPropertiesToList(_namespace, _class));
+            List<string> _propertyList = task.Result;
+            task.Dispose();
 
             foreach (var item in _propertyList)
             {
@@ -76,7 +83,13 @@ namespace WMIWork2
             {
                 selecties.Add(item);
             }
-            List<string> propertyValueList = WMItask.GetPropertiesValuesToList(cmbNamespaceValue.Text, cmbClassList.Text, selecties);
+
+            //List<string> propertyValueList = WMItask.GetPropertiesValuesToList(cmbNamespaceValue.Text, cmbClassList.Text, selecties);
+            string _namespace = cmbNamespaceValue.Text;
+            string _class = cmbClassList.Text;
+            Task<List<string>> task = Task<List<string>>.Factory.StartNew(() => WMItask.GetPropertiesValuesToList(_namespace, _class, selecties));
+            List<string> propertyValueList = task.Result;
+            task.Dispose();
 
             foreach (var item in propertyValueList)
             {
@@ -89,8 +102,13 @@ namespace WMIWork2
         {
             DataTable dt = new DataTable("Properties");
 
-           // List<string> propertiesList = WMItask.GetPropertiesToList(cmbNamespaceValue.Text, cmbClassList.Text);
-           DataSet propertiesDictionary = WMItask.GetPropertiesToDataSet(cmbNamespaceValue.Text, cmbClassList.Text);
+            // List<string> propertiesList = WMItask.GetPropertiesToList(cmbNamespaceValue.Text, cmbClassList.Text);
+            //DataSet propertiesDictionary = WMItask.GetPropertiesToDataSet(cmbNamespaceValue.Text, cmbClassList.Text);
+            string _namespace = cmbNamespaceValue.Text;
+            string _class = cmbClassList.Text;
+            Task<DataSet> task = Task<DataSet>.Factory.StartNew(() => WMItask.GetPropertiesToDataSet(_namespace, _class));
+            DataSet propertiesDictionary = task.Result;
+            task.Dispose();
 
 
             //foreach (var property in propertiesDictionary)
@@ -109,7 +127,7 @@ namespace WMIWork2
             //ds.Tables["Properties"].Rows.Add(newRow);
 
             dgProperty.DataSource = propertiesDictionary.Tables["Properties"];
-            
+
         }
     }
 }
